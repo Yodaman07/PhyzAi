@@ -93,7 +93,7 @@ class Voice_DB:
             if score >= self.comparison_threshold:
                 if DEBUG.DEBUG_MODE:
                     print(f"User: {user['speaker']} Score: {score}")
-                return user["speaker"]
+                return user["speaker"].lower()
 
         return "Unknown User"
 

@@ -37,9 +37,10 @@ audio captured so far (which may be empty) is returned.
     frequency = random.randint(400, 1000) # Set Frequency
     duration = 300 # Set Duration To 1000 ms == 1 second
 
-    if os.getenv("COMPUTERNAME") == "PHYZ":
+    if os.environ.get("COMPUTERNAME") == "PHYZAI":
         import winsound
         winsound.Beep(frequency, duration)
+        # winsound.PlaySound('SystemAsterisk', winsound.SND_ALIAS)
     elif os.environ.get("COMPUTERNAME") == "AYAANMAC":
         os.system('afplay /System/Library/Sounds/Glass.aiff')
 

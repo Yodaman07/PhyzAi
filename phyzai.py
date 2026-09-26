@@ -120,10 +120,10 @@ def audio_recorder_loop():
                 
 
 
-                if os.getenv("COMPUTERNAME") == "PHYZ":
+                if os.environ.get("COMPUTERNAME") == "PHYZAI":
                     import winsound
                     winsound.Beep(frequency, duration)
-                    winsound.PlaySound('SystemAsterisk', winsound.SND_ALIAS)
+                    # winsound.PlaySound('SystemAsterisk', winsound.SND_ALIAS)
                 elif os.environ.get("COMPUTERNAME") == "AYAANMAC":
                     os.system('afplay /System/Library/Sounds/Glass.aiff')
 

@@ -5,6 +5,7 @@ import OPTIONS
 from actual_chatgpt import ask_chatgpt
 from rich import print as rp
 
+from debug_config import DEBUG
 from memory_db import MemoryDB
 
 IDLE_THRESHOLD = random.randint(60, 120)
@@ -65,17 +66,29 @@ def check_idle_and_prompt_chatgpt(last_interaction_time, last_idle_response_time
 
         # Inject mentor if needed
         if behavior == "moderator_poke":
+            if DEBUG.DEBUG_MODE: print("MODERATOR POKE")
             seen = get_seen_mentors() # TODO need to look into how this is being updated
             spoken = get_seen_mentors("spoken_to_mentors.txt")
 
             if seen or spoken:
-                chosen_mentor = random.choice(seen+spoken)
-                relevant_memories = memory_db.filter_by_metadata("speaker", "ayaan")
-                memory = random.choice(relevant_memories["text"])
+
+                while True:
+                    try:
+                        chosen_mentor = random.choice(seen + spoken)
+                        if DEBUG.DEBUG_MODE: print(f"Poking fun at {chosen_mentor}")
+                        relevant_memories = memory_db.filter_by_metadata("speaker", chosen_mentor) #returns a list of all memories and embeddings with that speaker name
+                        memory = random.choice(relevant_memories)
+                        break
+                    except IndexError:
+                        print("oops that didn't work, trying again")
+                        continue
+
+
+                if DEBUG.DEBUG_MODE: print(f"Using memory: {memory['text']}")
                 prompt = f"Say something playful to poke fun at {chosen_mentor}, one of the moderators. Be very light-hearted and funny."
 
                 if memory is not None: #if there are memories of the chosen mentors
-                    prompt+=f" You can also incorporate something about the mentor into the joke. {chosen_mentor} once said \"{memory}\" "
+                    prompt+=f" You can also incorporate something about the mentor into the joke. {chosen_mentor} once said \"{memory['text']}\" "
 
 
 
@@ -92,7 +105,9 @@ def check_idle_and_prompt_chatgpt(last_interaction_time, last_idle_response_time
 
 
 if __name__ == "__main__": # just for testing
-    memory_db = MemoryDB()
-    relevant_memories = memory_db.filter_by_metadata("speaker", "ayaan")
-    for memory in relevant_memories:
-        print(memory["text"])
+   check_idle_and_prompt_chatgpt(0, 100000, MemoryDB())
+   #  memory_db = MemoryDB()
+    # relevant_memories = memory_db.filter_by_metadata("speaker", "ayaan")
+    # print(relevant_memories[0]['text'])
+    # for memory in relevant_memories:
+    #     print(memory["text"])
